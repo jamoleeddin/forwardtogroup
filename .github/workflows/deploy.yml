@@ -15,11 +15,28 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
         run: |
           mkdir -p ~/.ssh
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
-          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_deploy
+
+          if [ -n "$SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            # Secret yo'q — host kalitini serverning o'zidan olamiz (TOFU).
+            # Bu birinchi ulanishda MITM'dan himoya qilmaydi; qat'iyroq
+            # tekshiruv uchun SSH_KNOWN_HOSTS secretini qo'shing.
+            echo "::warning::SSH_KNOWN_HOSTS yo'q — host kaliti ssh-keyscan orqali olinmoqda"
+            ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" > ~/.ssh/known_hosts 2>/dev/null
+          fi
+
+          if ! [ -s ~/.ssh/known_hosts ]; then
+            echo "::error::Host kaliti olinmadi. SSH_HOST/SSH_PORT to'g'rimi yoki port tashqaridan ochiqmi?"
+            exit 1
+          fi
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Upload project
         env:

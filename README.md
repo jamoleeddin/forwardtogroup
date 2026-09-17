@@ -25,8 +25,13 @@ Lokal mashinangizda:
 ```bash
 ssh-keygen -t ed25519 -f ~/.ssh/forwardtogroup_deploy -N ''
 ssh-copy-id -i ~/.ssh/forwardtogroup_deploy.pub USER@SERVER
-ssh-keyscan -p 22 SERVER            # chiqishini SSH_KNOWN_HOSTS uchun saqlang
+ssh-keyscan -p 22 SERVER            # ixtiyoriy: SSH_KNOWN_HOSTS uchun
 ```
+
+`SSH_KNOWN_HOSTS` ni qo'shmasangiz, workflow har deployda serverning host
+kalitini `ssh-keyscan` bilan o'zi oladi. Ishlaydi, lekin birinchi ulanishda
+MITM'dan himoya qilmaydi — bu kalitni oldindan bilishning butun ma'nosi edi.
+Imkoni bo'lsa secretni qo'shib qo'ying.
 
 Yopiq kalitni (`~/.ssh/forwardtogroup_deploy`) hech qachon repoga qo'ymang.
 
@@ -40,7 +45,7 @@ Settings → Secrets and variables → Actions → New repository secret:
 | `SSH_USER` | SSH foydalanuvchisi |
 | `SSH_PORT` | port (ixtiyoriy, default `22`) |
 | `SSH_PRIVATE_KEY` | `~/.ssh/forwardtogroup_deploy` faylining to'liq mazmuni |
-| `SSH_KNOWN_HOSTS` | `ssh-keyscan` chiqishi |
+| `SSH_KNOWN_HOSTS` | ixtiyoriy. `ssh-keyscan` chiqishi. Bo'lmasa workflow host kalitini deploy paytida o'zi oladi |
 | `DEPLOY_PATH` | ixtiyoriy. Ko'rsatilmasa `~/apps/forwardtogroup` ishlatiladi |
 | `TELEGRAM_API_ID` | my.telegram.org dan |
 | `TELEGRAM_API_HASH` | my.telegram.org dan |
