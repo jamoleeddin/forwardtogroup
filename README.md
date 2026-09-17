@@ -41,7 +41,7 @@ Settings → Secrets and variables → Actions → New repository secret:
 | `SSH_PORT` | port (ixtiyoriy, default `22`) |
 | `SSH_PRIVATE_KEY` | `~/.ssh/forwardtogroup_deploy` faylining to'liq mazmuni |
 | `SSH_KNOWN_HOSTS` | `ssh-keyscan` chiqishi |
-| `DEPLOY_PATH` | serverdagi papka, masalan `/home/user/forwardtogroup` |
+| `DEPLOY_PATH` | ixtiyoriy. Ko'rsatilmasa `~/apps/forwardtogroup` ishlatiladi |
 | `TELEGRAM_API_ID` | my.telegram.org dan |
 | `TELEGRAM_API_HASH` | my.telegram.org dan |
 
@@ -59,8 +59,14 @@ gh secret set SSH_HOST         # qiymat so'raydi
 ishga tushadi. Workflow: fayllarni `rsync` qiladi, secretlardan serverda `.env`
 yozadi (`umask 077`), `.venv` ichiga bog'liqliklarni o'rnatadi.
 
-`rsync --delete` ishlatiladi, lekin `.env`, `targets.txt`, `.venv` va
-`*.session` istisno qilingan — serverdagi nusxalari o'chmaydi.
+Default papka — SSH foydalanuvchisining uy katalogidagi `apps/forwardtogroup`.
+U faqat shu loyihaga tegishli, boshqa papkalarga tegmaydi. Boshqa joy kerak
+bo'lsa `DEPLOY_PATH` secretini qo'shing (uy katalogiga nisbatan yo'l yoki
+absolyut yo'l).
+
+`rsync --delete` ishlatiladi — shuning uchun papka faqat shu loyiha uchun
+bo'lishi muhim. `.env`, `targets.txt`, `.venv` va `*.session` istisno
+qilingan, serverdagi nusxalari o'chmaydi.
 
 ### 4. Serverda birinchi marta
 
@@ -69,7 +75,7 @@ talab qiladi va yuborishni qo'lda boshlagan ma'qul:
 
 ```bash
 ssh USER@SERVER
-cd $DEPLOY_PATH
+cd ~/apps/forwardtogroup
 nano targets.txt                 # manzillar ro'yxati (bir marta)
 .venv/bin/python broadcast.py    # birinchi safar login so'raydi
 ```
