@@ -28,8 +28,8 @@ ssh-copy-id -i ~/.ssh/forwardtogroup_deploy.pub USER@SERVER
 ssh-keyscan -p 22 SERVER            # ixtiyoriy: SSH_KNOWN_HOSTS uchun
 ```
 
-`SSH_KNOWN_HOSTS` ni qo'shmasangiz, workflow har deployda serverning host
-kalitini `ssh-keyscan` bilan o'zi oladi. Ishlaydi, lekin birinchi ulanishda
+`SSH_KNOWN_HOSTS` bo'lmasa — yoki undagi yozuv `SSH_HOST` ga mos kelmasa —
+workflow serverning host kalitini `ssh-keyscan` bilan o'zi oladi. Ishlaydi, lekin birinchi ulanishda
 MITM'dan himoya qilmaydi — bu kalitni oldindan bilishning butun ma'nosi edi.
 Imkoni bo'lsa secretni qo'shib qo'ying.
 
