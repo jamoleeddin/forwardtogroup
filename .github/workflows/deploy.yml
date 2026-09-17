@@ -22,14 +22,25 @@ jobs:
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
           chmod 600 ~/.ssh/id_deploy
 
+          : > ~/.ssh/known_hosts
           if [ -n "$SSH_KNOWN_HOSTS" ]; then
             printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          fi
+
+          # known_hosts da aynan shu host uchun yozuv bormi? Port 22 bo'lmasa
+          # yozuv [host]:port ko'rinishida bo'ladi.
+          if [ "$SSH_PORT" = "22" ]; then
+            lookup="$SSH_HOST"
           else
-            # Secret yo'q — host kalitini serverning o'zidan olamiz (TOFU).
-            # Bu birinchi ulanishda MITM'dan himoya qilmaydi; qat'iyroq
-            # tekshiruv uchun SSH_KNOWN_HOSTS secretini qo'shing.
-            echo "::warning::SSH_KNOWN_HOSTS yo'q — host kaliti ssh-keyscan orqali olinmoqda"
-            ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" > ~/.ssh/known_hosts 2>/dev/null
+            lookup="[$SSH_HOST]:$SSH_PORT"
+          fi
+
+          if ! ssh-keygen -F "$lookup" -f ~/.ssh/known_hosts > /dev/null 2>&1; then
+            # Yozuv yo'q yoki secret boshqa hostniki — kalitni serverdan olamiz
+            # (TOFU). Bu birinchi ulanishda MITM'dan himoya qilmaydi; qat'iyroq
+            # tekshiruv uchun SSH_KNOWN_HOSTS ga to'g'ri qiymat yozing.
+            echo "::warning::known_hosts da $SSH_HOST uchun yozuv yo'q — ssh-keyscan ishlatilmoqda"
+            ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
           fi
 
           if ! [ -s ~/.ssh/known_hosts ]; then
