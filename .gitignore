@@ -1,0 +1,6 @@
+.env
+targets.txt
+*.session
+*.session-journal
+*.dbm
+__pycache__/
