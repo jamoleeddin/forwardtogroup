@@ -1,0 +1,4 @@
+# Har qatorda bitta manzil: @username yoki raqamli chat id.
+# Faqat o'zingiz admin bo'lgan yoki yuborishga ruxsat olingan chatlarni yozing.
+@mening_kanalim
+-1001234567890
